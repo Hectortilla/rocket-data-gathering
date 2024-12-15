@@ -8,9 +8,6 @@
 
 #include "parameter.h"
 
-MessageBufferHandle_t xMessageBufferToClient;
-QueueHandle_t xQueueTrans;
-
 extern "C" {
 	void app_main(void);
 }
@@ -42,14 +39,6 @@ void app_main(void)
 {
 	// Initialize i2c
 	start_i2c();
-
-	// Create Queue
-	xQueueTrans = xQueueCreate(10, sizeof(POSE_t));
-	configASSERT( xQueueTrans );
-
-	// Create Message Buffer
-	xMessageBufferToClient = xMessageBufferCreate(1024);
-	configASSERT( xMessageBufferToClient );
 
 	// Start imu task
 	xTaskCreate(&mpu6050, "IMU", 1024*8, NULL, 5, NULL);

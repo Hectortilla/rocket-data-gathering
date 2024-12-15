@@ -49,7 +49,6 @@ THE SOFTWARE.
 #include "esp_log.h"
 #include "esp_err.h"
 #include "driver/i2c.h"
-#include "cJSON.h"
 
 #include "parameter.h"
 
@@ -174,34 +173,6 @@ void mpu6050(void *pvParameters){
 	while(1){
 		if (mpu.dmpGetCurrentFIFOPacket(fifoBuffer)) { // Get the Latest packet
 			getYawPitchRoll();
-			float _roll = ypr[2] * RAD_TO_DEG;
-			float _pitch = ypr[1] * RAD_TO_DEG;
-			float _yaw = ypr[0] * RAD_TO_DEG;
-
-			// Send UDP packet
-			POSE_t pose;
-			pose.roll = _roll;
-			pose.pitch = _pitch;
-			pose.yaw = _yaw;
-			if (xQueueSend(xQueueTrans, &pose, 100) != pdPASS ) {
-				ESP_LOGE(TAG, "xQueueSend fail");
-			}
-
-			// Send WEB request
-			cJSON *request;
-			request = cJSON_CreateObject();
-			cJSON_AddStringToObject(request, "id", "data-request");
-			cJSON_AddNumberToObject(request, "roll", _roll);
-			cJSON_AddNumberToObject(request, "pitch", _pitch);
-			cJSON_AddNumberToObject(request, "yaw", _yaw);
-			char *my_json_string = cJSON_Print(request);
-			ESP_LOGD(TAG, "my_json_string\n%s",my_json_string);
-			size_t xBytesSent = xMessageBufferSend(xMessageBufferToClient, my_json_string, strlen(my_json_string), 100);
-			if (xBytesSent != strlen(my_json_string)) {
-				ESP_LOGE(TAG, "xMessageBufferSend fail");
-			}
-			cJSON_Delete(request);
-			cJSON_free(my_json_string);
 
 			//getQuaternion();
 			//getEuler();
