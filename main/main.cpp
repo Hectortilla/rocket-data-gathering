@@ -5,6 +5,7 @@
 #include "freertos/message_buffer.h"
 #include "esp_log.h"
 #include "driver/i2c.h"
+#include "Blink.c"
 
 #include "parameter.h"
 
@@ -13,6 +14,7 @@ extern "C" {
 }
 
 void mpu6050(void *pvParameters);
+void blink_task(void *pvParameters);
 
 #ifdef __cplusplus
 extern "C" {
@@ -42,6 +44,9 @@ void app_main(void)
 
 	// Start imu task
 	xTaskCreate(&mpu6050, "IMU", 1024*8, NULL, 5, NULL);
+
+	// Start blink task
+	xTaskCreate(&blink_task, "Blink", 1024*8, NULL, 5, NULL);
 
 	vTaskDelay(100);
 }
