@@ -1,0 +1,2 @@
+COMPONENT_ADD_INCLUDEDIRS = .
+COMPONENT_DEPENDS = I2cdev log esp_idf_lib_helpers

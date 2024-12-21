@@ -1,2 +1,2 @@
-idf_component_register(SRCS "main.cpp" "mpu6050.cpp"
+idf_component_register(SRCS "mpu6050.cpp" "main.cpp" # "bmp280.cpp" 
                        INCLUDE_DIRS ".")

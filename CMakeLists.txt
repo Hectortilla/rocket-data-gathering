@@ -4,4 +4,6 @@ cmake_minimum_required(VERSION 3.16)
 
 include($ENV{IDF_PATH}/tools/cmake/project.cmake)
 
-project(blink)
+set(COMPONENTS main Blink esp_idf_lib_helpers I2Cdev MPU6050)
+
+project(rocket-data-gathering)

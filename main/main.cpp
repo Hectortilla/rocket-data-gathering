@@ -15,6 +15,7 @@ extern "C" {
 
 void mpu6050(void *pvParameters);
 void blink_task(void *pvParameters);
+// void bmp280_test(void *pvParameters);
 
 #ifdef __cplusplus
 extern "C" {
@@ -47,6 +48,9 @@ void app_main(void)
 
 	// Start blink task
 	xTaskCreate(&blink_task, "Blink", 1024*8, NULL, 5, NULL);
+
+	// Start bmp280 task
+    // xTaskCreatePinnedToCore(bmp280_test, "bmp280_test", configMINIMAL_STACK_SIZE * 8, NULL, 5, NULL, APP_CPU_NUM);
 
 	vTaskDelay(100);
 }
