@@ -1,5 +1,5 @@
 idf_component_register(
-    SRCS bmp280.c
+    SRCS bmp280.cpp
     INCLUDE_DIRS .
-    REQUIRES I2Cdev log esp_idf_lib_helpers
+    REQUIRES driver I2Cdev log esp_idf_lib_helpers
 )

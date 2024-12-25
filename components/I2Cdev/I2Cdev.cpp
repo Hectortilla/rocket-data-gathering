@@ -44,6 +44,30 @@ THE SOFTWARE.
 #undef ESP_ERROR_CHECK
 #define ESP_ERROR_CHECK(x)   do { esp_err_t rc = (x); if (rc != ESP_OK) { ESP_LOGE("err", "esp_err_t = %d", rc); /*assert(0 && #x);*/} } while(0);
 
+#if CONFIG_I2CDEV_NOLOCK
+#define SEMAPHORE_TAKE(port)
+#else
+#define SEMAPHORE_TAKE(port) do { \
+        if (!xSemaphoreTake(states[port].lock, pdMS_TO_TICKS(CONFIG_I2CDEV_TIMEOUT))) \
+        { \
+            ESP_LOGE(TAG, "Could not take port mutex %d", port); \
+            return ESP_ERR_TIMEOUT; \
+        } \
+        } while (0)
+#endif
+
+#if CONFIG_I2CDEV_NOLOCK
+#define SEMAPHORE_GIVE(port)
+#else
+#define SEMAPHORE_GIVE(port) do { \
+        if (!xSemaphoreGive(states[port].lock)) \
+        { \
+            ESP_LOGE(TAG, "Could not give port mutex %d", port); \
+            return ESP_FAIL; \
+        } \
+        } while (0)
+#endif
+
 /** Default constructor.
  */
 I2Cdev::I2Cdev() {
