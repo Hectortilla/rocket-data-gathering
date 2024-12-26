@@ -10,6 +10,8 @@
 #define BMP280_CHIP_ID  0x58 //!< BMP280 has chip-id 0x58
 #define BME280_CHIP_ID  0x60 //!< BME280 has chip-id 0x60
 
+#define BMP280_REG_ID          0xD0
+
 class BMP280 {
     public:
         BMP280();
