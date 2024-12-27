@@ -6,8 +6,14 @@ BMP280::BMP280() {
 
 void BMP280::initialize() {
     ESP_LOGI("BMP280", "initialize...");
+
     readDeviceID();
+    resetSensor();
+    waitForOKStatus();
     readCalibrationData();
+    configureSensor();
+    controlSensor();
+
     ESP_LOGI("BMP280", "...initialized");
 }
 
@@ -23,6 +29,27 @@ int16_t BMP280::read2Bytes(uint8_t reg) {
 	return buffer[1] << 8 | buffer[0];
 }
 
+void BMP280::resetSensor() {
+    I2Cdev::writeByte(BMP280_I2C_ADDRESS_0, BMP280_REG_RESET, BMP280_RESET_VALUE);
+}
+void BMP280::waitForOKStatus() {
+    uint8_t status;
+    while (1) {
+        status = read1Byte(BMP280_REG_STATUS);
+        if (status & 1)
+            break;
+    }
+}
+void BMP280::configureSensor() {
+    uint8_t _config = (config.standby << 5) | (config.filter << 2);
+    I2Cdev::writeByte(BMP280_I2C_ADDRESS_0, BMP280_REG_CONFIG, _config);
+}
+
+void BMP280::controlSensor() {
+    uint8_t ctrl = (config.oversampling_temperature << 5) | (config.oversampling_pressure << 2) | (config.mode);
+    I2Cdev::writeByte(BMP280_I2C_ADDRESS_0, BMP280_REG_CTRL, ctrl);
+}
+
 void BMP280::readCalibrationData() {
     calibration_data.dig_T1 = (uint16_t)read2Bytes(0x88);
     calibration_data.dig_T2 = read2Bytes(0x8a);
@@ -36,7 +63,8 @@ void BMP280::readCalibrationData() {
     calibration_data.dig_P7 = read2Bytes(0x9a);
     calibration_data.dig_P8 = read2Bytes(0x9c);
     calibration_data.dig_P9 = read2Bytes(0x9e);
- 
+    
+    /*
     calibration_data.dig_H1 = (uint8_t)read1Byte(0xa1);
     calibration_data.dig_H2 = read2Bytes(0xe1);
     calibration_data.dig_H3 = (uint8_t)read1Byte(0xe3);
@@ -46,6 +74,7 @@ void BMP280::readCalibrationData() {
     calibration_data.dig_H4 = (h4 & 0x00ff) << 4 | (h4 & 0x0f00) >> 8;
     h5 = (uint16_t)read2Bytes(0xe5);
     calibration_data.dig_H5 = h5 >> 4;
+    */
 }
 
 void BMP280::readDeviceID() {
@@ -55,22 +84,22 @@ void BMP280::readDeviceID() {
 }
 
 BMP280SensorData BMP280::getSensorData() {
-    uint8_t buffer[8];
+    uint8_t buffer[6];
     I2Cdev::readBytes(BMP280_I2C_ADDRESS_0, BMP280_REG_PRESS_MSB, 8, buffer, I2Cdev::readTimeout);
     int32_t _pressure = buffer[0] << 12 | buffer[1] << 4 | buffer[2] >> 4;
     int32_t _temp = buffer[3] << 12 | buffer[4] << 4 | buffer[5] >> 4;
-    int32_t _humidity = buffer[6] << 8 | buffer[7];
+    // int32_t _humidity = buffer[6] << 8 | buffer[7];
 
     int32_t fine_temp;
     _temp = compensateTemperature(_temp, &fine_temp);
     _pressure = compensatePressure(_pressure, fine_temp);
-    _humidity = compensateHumidity(_humidity, fine_temp);
+    // _humidity = compensateHumidity(_humidity, fine_temp);
 
     float temp = (float)_temp / 100;
     float pressure = (float)_pressure / 256;
-    float humidity = (float)_humidity / 1024;
+    // float humidity = (float)_humidity / 1024;
 
-    return {temp, pressure, humidity};
+    return {temp, pressure};
 }
 
 
@@ -123,6 +152,7 @@ uint32_t BMP280::compensatePressure(int32_t adc_press, int32_t fine_temp) {
  *
  * Return value is in Pa, 24 integer bits and 8 fractional bits.
  */
+/*
 uint32_t BMP280::compensateHumidity(int32_t adc_hum, int32_t fine_temp) {
     int32_t v_x1_u32r;
 
@@ -135,3 +165,4 @@ uint32_t BMP280::compensateHumidity(int32_t adc_hum, int32_t fine_temp) {
     v_x1_u32r = v_x1_u32r > 419430400 ? 419430400 : v_x1_u32r;
     return v_x1_u32r >> 12;
 }
+*/

@@ -20,7 +20,7 @@ void bmp280(void *pvParameters) {
     BMP280SensorData sensorData;
 	while(1) {
 		sensorData = bmp.getSensorData();
-        printf("Pressure: %.2f Pa, Temperature: %.2f C, Humidity: %.2f\n", sensorData.pressure, sensorData.temp, sensorData.humidity);
+        printf("Pressure: %.2f Pa, Temperature: %.2f C\n", sensorData.pressure, sensorData.temp);
 
 		vTaskDelay(100/portTICK_PERIOD_MS);
 	}
