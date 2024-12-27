@@ -44,10 +44,10 @@ void app_main(void)
 	start_i2c();
 
 	// Start imu task
-	xTaskCreate(&mpu6050, "IMU", 1024*8, NULL, 5, NULL);
+	// xTaskCreate(&mpu6050, "IMU", 1024*8, NULL, 5, NULL);
 
 	// Start blink task
-	xTaskCreate(&blink_task, "Blink", 1024*8, NULL, 5, NULL);
+	// xTaskCreate(&blink_task, "Blink", 1024*8, NULL, 5, NULL);
 
 	// Start bmp280 task
     // xTaskCreatePinnedToCore(bmp280, "bmp280", configMINIMAL_STACK_SIZE * 8, NULL, 5, NULL, APP_CPU_NUM);

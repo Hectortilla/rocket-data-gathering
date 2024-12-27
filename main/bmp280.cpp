@@ -15,11 +15,13 @@ void bmp280(void *pvParameters) {
     bmp.initialize();
 
 	// Get Device ID
-	uint8_t buffer[1];
-	I2Cdev::readByte(BMP280_I2C_ADDRESS_0, BMP280_REG_ID, buffer);
-	ESP_LOGI(TAG, "getDeviceID=0x%x", buffer[0]);
+	ESP_LOGI(TAG, "getDeviceID=0x%x", bmp.id);
 
-    while(1) {
-        vTaskDelay(1);
-    }
+    BMP280SensorData sensorData;
+	while(1) {
+		sensorData = bmp.getSensorData();
+        printf("Pressure: %.2f Pa, Temperature: %.2f C, Humidity: %.2f\n", sensorData.pressure, sensorData.temp, sensorData.humidity);
+
+		vTaskDelay(100/portTICK_PERIOD_MS);
+	}
 }
