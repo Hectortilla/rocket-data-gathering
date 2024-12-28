@@ -158,12 +158,13 @@ void mpu6050(void *pvParameters){
 
 	// This need to be setup individually
 	// supply your own gyro offsets here, scaled for min sensitivity
-	mpu.setXAccelOffset(-2889);
-	mpu.setYAccelOffset(-444);
-	mpu.setZAccelOffset(698);
-	mpu.setXGyroOffset(149);
-	mpu.setYGyroOffset(27);
-	mpu.setZGyroOffset(17);
+
+	mpu.setXAccelOffset(-5064);
+	mpu.setYAccelOffset(6884);
+	mpu.setZAccelOffset(7938);
+	mpu.setXGyroOffset(27);
+	mpu.setYGyroOffset(24);
+	mpu.setZGyroOffset(-27);
 
 	// Calibration Time: generate offsets and calibrate our MPU6050
 	mpu.CalibrateAccel(6);
